@@ -1,0 +1,56 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+PointerAlignment: Left  
+ReferenceAlignment: Left
+
+BreakBeforeBraces: Attach
+
+# Spacing
+SpaceAfterCStyleCast: true
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpacesInAngles: false
+
+# Alignment
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+AlignTrailingComments: true
+
+# Breaking
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: Yes
+
+SortIncludes: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  # 1. Module's own header
+  - Regex: '^"hm_[^"]*\.hpp"'
+    Priority: 1
+    
+  # 2. Other project headers
+  - Regex: '^".*"'
+    Priority: 2
+    
+  # 3. External libraries
+  - Regex: '^<SDL3/.*>'
+    Priority: 3
+    
+  # 4. Standard library
+  - Regex: '^<.*>'
+    Priority: 4
+# Misc
+DerivePointerAlignment: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
