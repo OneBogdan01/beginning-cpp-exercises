@@ -10,6 +10,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include <print>
 
 using u8 = std::uint8_t;
 using u16 = std::uint16_t;
