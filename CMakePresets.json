@@ -2,53 +2,70 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "windows-msvc-debug",
-      "displayName": "Windows MSVC Debug",
-      "description": "Debug build using Ninja and MSVC",
+      "name": "windows-ninja-debug",
+      "displayName": "Windows x64 Debug (Ninja)",
+      "description": "Sets Ninja generator with MSVC compiler, x64 architecture, debug build type",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_COMPILER": "cl.exe",
-        "CMAKE_CXX_COMPILER": "cl.exe",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      },
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
       "architecture": {
         "value": "x64",
         "strategy": "external"
       },
-      "toolset": {
-        "value": "host=x64",
-        "strategy": "external"
+      "cacheVariables": {
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_GL_BACKEND": "ON",
+        "HM_EDITOR": "ON",
+        "ENABLE_VK_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "cl.exe",
+        "CXX": "cl.exe"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "hostOS": "Windows"
+          "hostOS": [ "Windows" ]
         }
       }
     },
     {
-      "name": "windows-msvc-release",
-      "displayName": "Windows MSVC Release",
-      "description": "Release build using Ninja and MSVC",
-      "inherits": "windows-msvc-debug",
+      "name": "windows-ninja-develop",
+      "displayName": "Windows x64 Develop (Ninja)",
+      "description": "Sets Ninja generator with MSVC compiler, x64 architecture, develop build type",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENABLE_GL_BACKEND": "ON",
+        "HM_EDITOR": "ON",
+        "ENABLE_VK_BACKEND": "ON"
+      },
+      "environment": {
+        "CC": "cl.exe",
+        "CXX": "cl.exe"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Windows" ]
+        }
       }
     }
   ],
   "buildPresets": [
     {
-      "name": "windows-msvc-debug",
-      "configurePreset": "windows-msvc-debug",
-      "displayName": "Build Debug",
-      "description": "Build using Debug configuration"
+      "name": "windows-ninja-debug",
+      "configurePreset": "windows-ninja-debug"
     },
     {
-      "name": "windows-msvc-release",
-      "configurePreset": "windows-msvc-release",
-      "displayName": "Build Release",
-      "description": "Build using Release configuration"
+      "name": "windows-ninja-develop",
+      "configurePreset": "windows-ninja-develop"
     }
   ]
 }
