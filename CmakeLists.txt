@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.24.0)
-
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 project(beginning_cpp)
 
-file(GLOB CHAPTERS "*.cpp")
+file(GLOB_RECURSE CHAPTERS "chapter*/*.cpp")
+
+include_directories(./)
 foreach(chapter_file ${CHAPTERS})
+    get_filename_component(chapter_dir ${chapter_file} DIRECTORY)
+    get_filename_component(chapter_folder ${chapter_dir} NAME)
     get_filename_component(chapter_name ${chapter_file} NAME_WE)
     
-    add_executable(${chapter_name} ${chapter_file})
+    set(target_name "${chapter_folder}_${chapter_name}")
+    add_executable(${target_name} ${chapter_file})
 endforeach()
