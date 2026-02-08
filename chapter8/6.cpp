@@ -17,7 +17,6 @@ std::array<u32, 5> highest_grades(const std::vector<u32>& vector) {
 }
 std::array<u32, 5> lowest_grades(const std::vector<u32>& vector) {
     std::array<u32, 5> grades;
-    i32 index{0};
     std::copy_n(vector.begin(), 5, grades.begin());
     return grades;
 }
@@ -42,7 +41,7 @@ u32 variance(const std::vector<u32>& vector) {
 
     u32 sum{0};
     for (u32 grade : vector) {
-        auto dif = grade - avg;
+        i32 dif = grade - avg;
         sum += dif * dif;
     }
     sum /= vector.size();
