@@ -2,7 +2,7 @@
 
 // make this work with string view
 std::optional<std::size_t>
-find_last(const std::string& string, char to_find,
+find_last(std::string_view string, char to_find,
           std::optional<std::size_t> start_index = std::nullopt); // or: ... start_index = {});
 
 int main() {
@@ -24,7 +24,7 @@ int main() {
         std::println("Found an early i at index {}", *found_early_i);
 }
 
-std::optional<std::size_t> find_last(const std::string& string, char to_find,
+std::optional<std::size_t> find_last(std::string_view string, char to_find,
                                      std::optional<std::size_t> start_index) {
     // code below will not work for empty strings
     if (string.empty())
