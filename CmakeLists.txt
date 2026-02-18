@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(beginning_cpp)
 
-file(GLOB_RECURSE CHAPTERS "chapter*/*.cpp")
+file(GLOB_RECURSE CHAPTERS CONFIGURE_DEPENDS  "chapter*/*.cpp")
 
 include_directories(./)
 foreach(chapter_file ${CHAPTERS})
