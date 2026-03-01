@@ -1,7 +1,9 @@
-cmake_minimum_required(VERSION 3.24.0)
+cmake_minimum_required(VERSION 3.30)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD
+    "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 project(beginning_cpp)
 
 file(GLOB_RECURSE CHAPTERS CONFIGURE_DEPENDS  "chapter*/*.cpp")
@@ -14,4 +16,11 @@ foreach(chapter_file ${CHAPTERS})
     
     set(target_name "${chapter_folder}_${chapter_name}")
     add_executable(${target_name} ${chapter_file})
+    string(REGEX MATCH "[0-9]+" chapter_num ${chapter_folder})
+
+    if(chapter_num GREATER_EQUAL 11)
+        set_target_properties(${target_name} PROPERTIES
+            CXX_MODULE_STD ON
+        )
+    endif()
 endforeach()

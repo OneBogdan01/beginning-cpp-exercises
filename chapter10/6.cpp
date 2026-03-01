@@ -22,7 +22,7 @@ void print_words(const T& words);
 template <auto field_width, typename T>
 void print_words(const std::vector<T>& words) {
     constexpr auto max_char_per_line = 80u;
-    auto elements_per_line = max_char_per_line / field_width;
+    auto elements_per_line = max_char_per_line / (field_width + 1);
     auto words_printed = 0u;
     for (auto& element : words) {
         std::print("{:{}} ", element, field_width);
