@@ -6,21 +6,32 @@ set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD
     "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 project(beginning_cpp)
 
-file(GLOB_RECURSE CHAPTERS CONFIGURE_DEPENDS  "chapter*/*.cpp")
-
+file(GLOB_RECURSE CHAPTERS CONFIGURE_DEPENDS "chapter*/*.cpp")
 include_directories(./)
+
 foreach(chapter_file ${CHAPTERS})
     get_filename_component(chapter_dir ${chapter_file} DIRECTORY)
     get_filename_component(chapter_folder ${chapter_dir} NAME)
     get_filename_component(chapter_name ${chapter_file} NAME_WE)
-    
-    set(target_name "${chapter_folder}_${chapter_name}")
-    add_executable(${target_name} ${chapter_file})
-    string(REGEX MATCH "[0-9]+" chapter_num ${chapter_folder})
 
+    set(target_name "${chapter_folder}_${chapter_name}")
+    add_executable(${target_name} ${chapter_file} "chapter11/m_impl_2.cpp")
+
+    string(REGEX MATCH "[0-9]+" chapter_num ${chapter_folder})
     if(chapter_num GREATER_EQUAL 11)
         set_target_properties(${target_name} PROPERTIES
             CXX_MODULE_STD ON
         )
+        # WARNING this could be quite wasteful cause we are getting all module interfaces per executable
+        file(GLOB module_files "${chapter_dir}/*.cppm")
+        message(STATUS "Target: ${target_name}, modules: ${module_files}")
+        if(module_files)
+            target_sources(${target_name}
+                PUBLIC
+                FILE_SET my_modules TYPE CXX_MODULES
+                BASE_DIRS ${chapter_dir}
+                FILES ${module_files}
+            )
+        endif()
     endif()
 endforeach()
