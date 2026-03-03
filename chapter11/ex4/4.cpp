@@ -1,10 +1,9 @@
 // Sorting words recursively
 import std;
-import words3;
+import words;
 
 int main() {
-    using namespace words3::utils;
-    using namespace words3::sort;
+    using namespace words;
     std::string text;                   // The string to be sorted
     const auto separators{" ,.!?\"\n"}; // Word delimiters
 

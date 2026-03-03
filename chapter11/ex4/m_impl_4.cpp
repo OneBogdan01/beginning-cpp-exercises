@@ -1,18 +1,8 @@
-export module words3.utils;
+module words;
 
 import std;
 
-export using Words = std::vector<std::shared_ptr<std::string>>;
-
-namespace words3::utils {
-
-std::size_t max_word_length(const Words& words);
-
-export Words extract_words(const std::string& text, const std::string& separators);
-export void print_words(const Words& words);
-
-
-Words extract_words(const std::string& text, const std::string& separators) {
+Words words::extract_words(const std::string& text, const std::string& separators) {
     Words words;
 
     std::size_t start{text.find_first_not_of(separators)}; // Start index of first word
@@ -27,17 +17,36 @@ Words extract_words(const std::string& text, const std::string& separators) {
     return words;
 }
 
+void sort(Words& words, std::size_t start, std::size_t end) {
+    // start index must be less than end index for 2 or more elements
+    if (!(start < end))
+        return;
 
+    // Choose middle address to partition set
+    swap(words, start, (start + end) / 2); // Swap middle address with start
 
-std::size_t max_word_length(const Words& words) {
-    std::size_t max{};
-    for (auto& pword : words)
-        if (max < pword->length())
-            max = pword->length();
-    return max;
+    // Check words against chosen word
+    std::size_t current{start};
+    for (std::size_t i{start + 1}; i <= end; i++) {
+        if (*words[i] < *words[start]) // Is word less than chosen word?
+            swap(words, ++current, i); // Yes, so swap to the left
+    }
+
+    swap(words, start, current); // Swap chosen and last swapped words
+
+    if (current > start)
+        sort(words, start, current - 1); // Sort left subset if exists
+    if (end > current + 1)
+        sort(words, current + 1, end); // Sort right subset if exists
 }
 
-void print_words(const Words& words) {
+// Sort strings in ascending sequence
+void words::sort(Words& words) {
+    if (!words.empty())
+        ::sort(words, 0, words.size() - 1);
+}
+
+void words::print_words(const Words& words) {
     const std::size_t field_width{max_word_length(words) + 1};
     const std::size_t words_per_line{8};
     std::print("{:{}}", *words[0], field_width); // Output first word
@@ -52,6 +61,4 @@ void print_words(const Words& words) {
         std::print("{:{}}", *words[i], field_width); // Output a word
     }
     std::println("");
-}
-
 }
