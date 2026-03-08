@@ -1,64 +1,48 @@
 cmake_minimum_required(VERSION 3.30)
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Still experimental even in CMake 4.x — must be set BEFORE project()
 set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD
     "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 
 project(beginning_cpp)
 
-# Find all .cpp files recursively
 file(GLOB_RECURSE CHAPTERS CONFIGURE_DEPENDS "chapter*/*.cpp")
+
 include_directories(./)
 
-foreach(chapter_file ${CHAPTERS})
-    get_filename_component(chapter_dir ${chapter_file} DIRECTORY)
-    get_filename_component(chapter_name ${chapter_file} NAME_WE)
+foreach(src ${CHAPTERS})
+    file(RELATIVE_PATH rel ${CMAKE_SOURCE_DIR} ${src})
+    get_filename_component(dir ${rel} DIRECTORY)
+    get_filename_component(name ${src} NAME_WE)
+    string(REPLACE "/" "_" dir_flat ${dir})
+    set(target "${dir_flat}_${name}")
 
-    # Build a target name from the relative path
-    # e.g. chapter11/ex1/1.cpp -> chapter11_ex1_1
-    file(RELATIVE_PATH rel_path ${CMAKE_SOURCE_DIR} ${chapter_file})
-    get_filename_component(rel_dir ${rel_path} DIRECTORY)
-    string(REPLACE "/" "_" dir_part ${rel_dir})
-    set(target_name "${dir_part}_${chapter_name}")
 
-    # Skip module implementation files (m_*.cpp) — they get added to targets below
-    if(chapter_name MATCHES "^m_")
+    if(name MATCHES "^m_")
         continue()
     endif()
 
-    # Gather any module implementation files in the same directory
-    file(GLOB module_files "${chapter_dir}/*.cppm")
-    file(GLOB impl_files "${chapter_dir}/m_*.cpp")
+    get_filename_component(src_dir ${src} DIRECTORY)
+    file(GLOB impl "${src_dir}/m_*.cpp")
 
-    add_executable(${target_name} ${chapter_file})
+    add_executable(${target} ${src} ${impl})
 
-    # Extract chapter number from the path
-    string(REGEX MATCH "chapter([0-9]+)" _match ${rel_dir})
-    set(chapter_num ${CMAKE_MATCH_1})
+    if(dir MATCHES "chapter11")
+        set_target_properties(${target} PROPERTIES CXX_MODULE_STD ON)
 
-    if(chapter_num GREATER_EQUAL 11)
-    set_target_properties(${target_name} PROPERTIES
-        CXX_MODULE_STD ON
-    )
-    file(GLOB module_files "${chapter_dir}/*.cppm")
-    file(GLOB impl_files "${chapter_dir}/m_*.cpp")
+        get_filename_component(src_dir ${src} DIRECTORY)
+        file(GLOB cppm "${src_dir}/*.cppm")
 
-    # Module interfaces/partitions → CXX_MODULES file set
-    if(module_files)
-        target_sources(${target_name}
-            PUBLIC
-            FILE_SET my_modules TYPE CXX_MODULES
-            BASE_DIRS ${chapter_dir}
-            FILES ${module_files}
-        )
+        if(cppm)
+            target_sources(${target}
+                PUBLIC FILE_SET my_modules TYPE CXX_MODULES
+                BASE_DIRS ${src_dir}
+                FILES ${cppm}
+            )
+        endif()
     endif()
-
-    # Module implementation units → regular sources
-    if(impl_files)
-        target_sources(${target_name} PRIVATE ${impl_files})
-    endif()
-endif()
 endforeach()
