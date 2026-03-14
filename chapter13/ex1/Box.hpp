@@ -25,8 +25,8 @@ class Box {
     std::partial_ordering operator<=>(const Box& aBox) const;
     std::partial_ordering operator<=>(double value) const;
     bool operator==(const Box& aBox) const = default;
-
     Box operator+(const Box& aBox) const; // Function to add two Box objects
+    Box operator*(double value) const;
 
   private:
     double m_length{1.0};

@@ -66,6 +66,10 @@ int main() {
     std::println("The volume of the first box is {:.1f}", boxes[first].volume());
 
     std::println("The volume of the second box is {:.1f}", boxes[second].volume());
+    std::println("The Box {}", to_string(boxes[first]));
+    std::println("The Box using float as multiplier {}", to_string(boxes[first] * 5.0));
+
+    std::println("The Box using int as multiplier {}", to_string(boxes[first] * 5));
 
     std::println("The sum of these boxes is {}", to_string(boxes[first] + boxes[second]));
 

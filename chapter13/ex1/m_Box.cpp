@@ -24,3 +24,6 @@ std::string to_string(const Box& box) {
     return std::format("Box({:.1f}, {:.1f}, {:.1f})", box.getLength(), box.getWidth(),
                        box.getHeight());
 }
+Box Box::operator*(double value) const {
+    return Box{m_length, m_width, value * m_height};
+}
