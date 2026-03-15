@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <compare>
 #include <format>
+#include <iomanip>
+#include <istream>
 #include <string>
 
 class Box {
@@ -31,11 +33,11 @@ class Box {
     std::partial_ordering operator<=>(double otherVolume) const {
         return volume() <=> otherVolume;
     }
-
-    bool operator==(const Box& otherBox) const = default;
-    explicit operator double() const {
-        return volume();
+    operator bool() const {
+        return volume() == 0;
     }
+    bool operator==(const Box& otherBox) const = default;
+    friend std::istream& operator>>(std::istream& stream, Box& box);
 
   private:
     double m_length{1.0};
@@ -43,7 +45,15 @@ class Box {
     double m_height{1.0};
 };
 
-// Conversion to string
+std::ostream& operator<<(std::ostream& stream, const Box& box) {
+    stream << std::setprecision(1) << std::fixed; // Same as .1f format specifier
+    stream << "Box(" << box.getLength() << ", " << box.getWidth() << ", " << box.getHeight() << ')';
+    return stream;
+}
+std::istream& operator>>(std::istream& stream, Box& box) {
+    stream >> box.m_length >> box.m_width >> box.m_height;
+    return stream;
+}
 std::string to_string(const Box& box) {
     return std::format("Box({:.1f}, {:.1f}, {:.1f})", box.getLength(), box.getWidth(),
                        box.getHeight());

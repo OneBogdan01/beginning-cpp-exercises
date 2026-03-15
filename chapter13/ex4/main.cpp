@@ -33,9 +33,13 @@ int main()
 
     std::println("");
 
-    for (const auto& box : boxes)
-
+    for (const auto& box : boxes) {
         if (6.0 <= box) // Yes, even double <= Box works!!
-
             std::println("6 is less than or equal to {}", to_string(box));
+        if (double{box} == 6.0)
+            std::println("6 is equal to {}", to_string(box));
+        if (6.0 != double{box})
+
+            std::println("6 is not equal to {}", to_string(box));
+    }
 }
