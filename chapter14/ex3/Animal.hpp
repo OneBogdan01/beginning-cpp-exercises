@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-class Person {
+class Animal {
   public:
-    Person(std::string name, int weight);
+    Animal(std::string name, int weight);
 
     void who();
 
@@ -12,11 +12,11 @@ class Person {
     int m_weight;
 };
 
-class Lion : public Person {
+class Lion : public Animal {
   public:
     void who();
 };
-class Aardvark : public Person {
+class Aardvark : public Animal {
   public:
     void who();
 };

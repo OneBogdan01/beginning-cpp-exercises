@@ -1,13 +1,12 @@
-#include "Animal.hpp"
+#include "Person.hpp"
 #include <print>
-void Animal::who() {
-    std::println("Animal name is {}, and weight in pounds {}", m_name, m_weight);
-}
-Animal::Animal(std::string name, int weight) : m_name(name), m_weight(weight) {}
-void Lion::who() {
-    std::println("Lion here");
+void Person::who() const {
+    std::println("This person's name is {}, {} old and {}", m_name, m_age, m_gender);
 }
 
-void Aardvark::who() {
-    std::println("Aardvark here");
+void Employee::who() const {
+    std::println("This is an employee {} with id {}", get_name(), m_id);
+}
+void Executive::who() const {
+    std::println("This is executive {}", get_name());
 }
