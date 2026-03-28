@@ -1,0 +1,102 @@
+/*
+  Creating RAII classes to manage resource handles returned by a C interface
+  Remember: RAII is not just for dynamic memory: every resource should be managed by an object!
+ */
+
+#include "DB.h"
+#include "DBException.hpp"
+#include "Customer.hpp"
+#include <print>
+#include <vector>
+
+class SQLConnection {
+  public:
+    SQLConnection(DB_CONNECTION* connection) : m_connection(connection) {}
+    ~SQLConnection() {
+        db_disconnect(m_connection);
+    }
+    operator DB_CONNECTION*() const {
+        return m_connection;
+    }
+
+  private:
+    DB_CONNECTION* m_connection;
+};
+class QueryResult {
+  public:
+    QueryResult(DB_QUERY_RESULT* result) : m_result(result) {}
+    ~QueryResult() {
+        db_free_result(m_result);
+    }
+    operator DB_QUERY_RESULT*() const {
+        return m_result;
+    }
+
+  private:
+    DB_QUERY_RESULT* m_result;
+};
+void verifyCustomerFields(
+    DB_QUERY_RESULT* result); // Sanity check on the number of fields returned by our query
+std::vector<Customer>
+readCustomers(DB_QUERY_RESULT* result); // Convert the DB result to a series of C++ objects
+
+int main() {
+    SQLConnection connection{db_connect()};
+    try {
+        QueryResult result{db_query(connection, "SELECT * FROM CUSTOMER_TABEL")};
+        if (!result) {
+            throw DatabaseException{"Query failed"};
+        }
+
+        std::vector customers{readCustomers(result)};
+
+        if (customers.empty()) {
+            std::println("No customers found?");
+            return 2;
+        }
+
+        for (auto& customer : customers) {
+            std::println("{}", to_string(customer));
+        }
+
+    } catch (std::exception& caught) {
+        std::println("{}", caught.what());
+        return 1;
+    }
+
+    return 0;
+}
+
+std::vector<Customer> readCustomers(DB_QUERY_RESULT* result) {
+    // Sanity check
+    // (if the number of fields does not match 5,
+    // the code below would crash!)
+    verifyCustomerFields(result);
+
+    std::vector<Customer> customers;
+
+    auto row{db_fetch_row(result)};
+    while (row) {
+        customers.push_back(Customer{
+            row[0],            // Surname
+            row[1],            // Name
+            row[2],            // Street
+            std::stoi(row[3]), // Street number
+            row[4]             // City
+        });
+
+        row = db_fetch_row(result);
+    }
+
+    return customers;
+}
+
+void verifyCustomerFields(DB_QUERY_RESULT* result) {
+    const int numFields{db_num_fields(result)};
+    if (numFields < 0) {
+        throw DatabaseException{"db_num_fields() failed"};
+    }
+    if (numFields != 5) {
+        throw DatabaseException{"Unexpected number of fields: " + std::to_string(numFields)};
+    }
+}
