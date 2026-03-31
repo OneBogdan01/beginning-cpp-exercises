@@ -2,7 +2,7 @@
 
 #include "LinkedList.hpp"
 
-#include "Array.hpp"
+#include "SparseArray.hpp"
 #include <print>
 
 int main() {

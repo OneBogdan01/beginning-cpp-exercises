@@ -92,6 +92,7 @@ class LinkedList {
     std::size_t m_size{0};    // Number of elements
 };
 
+// a very clangy implementation
 template <typename T>
 class LinkedList<T>::Iterator {
   public:
