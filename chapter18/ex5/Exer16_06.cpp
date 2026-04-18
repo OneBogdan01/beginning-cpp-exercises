@@ -16,13 +16,11 @@ class SQLConnection {
     SQLConnection(DB_CONNECTION* connection) : m_connection(connection) {}
     SQLConnection(const SQLConnection&) = delete;
     SQLConnection& operator=(const SQLConnection&) = delete;
-    SQLConnection(SQLConnection&& connection) noexcept : m_connection(connection.m_connection) {
-        connection.m_connection = nullptr;
-    };
+    SQLConnection(SQLConnection&& connection) noexcept
+        : m_connection(std::exchange(connection.m_connection, nullptr)) {};
 
     SQLConnection& operator=(SQLConnection&& connection) noexcept {
-        SQLConnection moved{std::move(connection)};
-        swap(moved);
+        m_connection = std::exchange(connection.m_connection, nullptr);
         return *this;
     }
     ~SQLConnection() {
@@ -48,13 +46,10 @@ class QueryResult {
     }
     QueryResult(const QueryResult&) = delete;
     QueryResult& operator=(const QueryResult&) = delete;
-    QueryResult(QueryResult&& query) noexcept : m_result(query.m_result) {
-        query.m_result = nullptr;
-    };
+    QueryResult(QueryResult&& query) noexcept : m_result(std::exchange(query.m_result, nullptr)) {};
 
     QueryResult& operator=(QueryResult&& query) noexcept {
-        m_result = query.m_result;
-        query.m_result = nullptr;
+        m_result = std::exchange(query.m_result, nullptr);
         return *this;
     }
     operator DB_QUERY_RESULT*() const {

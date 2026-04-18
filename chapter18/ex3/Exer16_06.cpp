@@ -1,3 +1,4 @@
+
 /*
   Creating RAII classes to manage resource handles returned by a C interface
   Remember: RAII is not just for dynamic memory: every resource should be managed by an object!
@@ -6,8 +7,6 @@
 #include "DB.h"
 #include "DBException.hpp"
 #include "Customer.hpp"
-
-#include <functional>
 #include <print>
 #include <vector>
 
@@ -16,21 +15,9 @@ class SQLConnection {
     SQLConnection(DB_CONNECTION* connection) : m_connection(connection) {}
     SQLConnection(const SQLConnection&) = delete;
     SQLConnection& operator=(const SQLConnection&) = delete;
-    SQLConnection(SQLConnection&& connection) noexcept : m_connection(connection.m_connection) {
-        connection.m_connection = nullptr;
-    };
-
-    SQLConnection& operator=(SQLConnection&& connection) noexcept {
-        SQLConnection moved{std::move(connection)};
-        swap(moved);
-        return *this;
-    }
     ~SQLConnection() {
         db_disconnect(m_connection);
     }
-    void swap(SQLConnection& moved) noexcept {
-        std::swap(m_connection, moved.m_connection);
-    };
     operator DB_CONNECTION*() const {
         return m_connection;
     }
@@ -46,15 +33,6 @@ class QueryResult {
     }
     QueryResult(const QueryResult&) = delete;
     QueryResult& operator=(const QueryResult&) = delete;
-    QueryResult(QueryResult&& query) noexcept : m_result(query.m_result) {
-        query.m_result = nullptr;
-    };
-
-    QueryResult& operator=(QueryResult&& query) noexcept {
-        m_result = query.m_result;
-        query.m_result = nullptr;
-        return *this;
-    }
     operator DB_QUERY_RESULT*() const {
         return m_result;
     }
