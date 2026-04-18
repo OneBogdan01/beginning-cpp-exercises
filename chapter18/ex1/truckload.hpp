@@ -1,0 +1,121 @@
+#pragma once
+#include <cstddef>
+#include <format>
+#include <functional>
+#include <memory>
+#include <random>
+#include <stdexcept>
+#include <string>
+
+class Box {
+  public:
+    Box() = default;
+    Box(double length, double width, double height)
+        : m_length{length}, m_width{width}, m_height{height} {};
+
+    double volume() const {
+        return m_length * m_width * m_height;
+    }
+
+    int compare(const Box& box) const {
+        if (volume() < box.volume())
+            return -1;
+        if (volume() == box.volume())
+            return 0;
+        return +1;
+    }
+
+    friend std::string to_string(const Box& box) {
+        return std::format("Box({:.1f},{:.1f},{:.1f})", box.m_length, box.m_width, box.m_height);
+    }
+
+  private:
+    double m_length{1.0};
+    double m_width{1.0};
+    double m_height{1.0};
+};
+
+using SharedBox = std::shared_ptr<Box>;
+
+class Truckload {
+  public:
+    class Package;
+
+    Truckload() = default; // Default constructor - empty truckload
+
+    Truckload(SharedBox box); // Constructor - one Box
+
+    Truckload(const std::vector<SharedBox>& boxes); // Constructor - vector of Boxes
+    Truckload(const Truckload& src);                // Copy constructor
+    Truckload& operator=(const Truckload& src) {
+        if (&src == this) {
+            return *this;
+        }
+        delete m_head;
+        m_head = nullptr;
+        m_tail = nullptr;
+        for (Package* package{src.m_head}; package; package = package->m_next) {
+            addBox(package->m_box);
+        }
+    }
+    Truckload(Truckload&& src) noexcept;
+    void swap(Truckload& truck) noexcept;
+    Truckload& operator=(Truckload&& src) noexcept;
+
+    SharedBox& operator[](std::size_t index) {
+        std::size_t count{}; // Package count
+
+        for (Package* package{m_head}; package; package = package->m_next)
+
+        {
+            if (count++ == index) // Up to index yet?
+
+                return package->m_box; // If so return the pointer to Box
+        }
+        throw std::out_of_range{"invalid element at the specified index"};
+    } // Overloaded subscript operator
+
+    ~Truckload(); // Destructor
+    class Iterator;
+    Iterator getIterator() const;
+
+    void addBox(SharedBox box); // Add a new SharedBox
+    void delete_node(Package* current);
+    bool removeBox(SharedBox box); // Remove a Box from the Truckload
+    void removeBox(Iterator& box); // Remove a Box from the Truckload
+
+    void printBoxes() const; // Output the Boxes
+    void printBoxesReversed() const;
+
+  private:
+    class Package {
+      public:
+        SharedBox m_box; // Pointer to the Box object contained in this Package
+        Package* m_next; // Pointer to the next Package in the list
+        Package* m_previous;
+
+        Package(SharedBox box) : m_box{box}, m_next{nullptr}, m_previous{nullptr} {} // Constructor
+        ~Package() {
+            delete m_next;
+        } // Destructor
+    };
+
+    Package* m_head{}; // First in the list
+    Package* m_tail{}; // Last in the list
+};
+
+class Truckload::Iterator {
+  public:
+    SharedBox getFirstBox();         // Get the first Box
+    SharedBox getLastBox();          // Get the first Box
+    SharedBox getNextBox();          // Get the next Box
+    SharedBox getPreviousBox();      // Get the next Box
+    SharedBox getCurrentBox() const; // Get the next Box
+  private:
+    Package* m_head;        // The head of the linked list (needed for getFirstBox())
+    Package* m_tail;        // The head of the linked list (needed for getFirstBox())
+    Package* m_current;     // The package whose Box to retrieve next
+    friend class Truckload; // Only a Truckload can create an Iterator
+    explicit Iterator(Package* head, Package* tail = nullptr)
+        : m_head{head}, m_tail(tail), m_current{nullptr} {}
+};
